@@ -196,3 +196,70 @@ func main() {
 while working with dates and times formatters in go you always have to maintain the strings as constant which is given in the go doc. for Ex:- ```02 -> day, 01 -> month, 2006 -> year, Monday --> weekday name```, casesensitive it has to be ```Monday``` not ```monday```
 * [Learn More in go Playground](https://go.dev/play/p/d_92jfpw8Xq)
 * [Time Doc](https://pkg.go.dev/time#Time)
+
+### Build executables for different operating systems
+open the terminal and move to the go project directory and run below commands:
+```bash
+go env
+```
+output:
+```bash
+GO111MODULE=''
+GOARCH='amd64'
+GOBIN=''
+GOCACHE='/home/bugsfounder/.cache/go-build'
+GOENV='/home/bugsfounder/.config/go/env'
+GOEXE=''
+GOEXPERIMENT=''
+GOFLAGS=''
+GOHOSTARCH='amd64'
+GOHOSTOS='linux'
+GOINSECURE=''
+GOMODCACHE='/home/bugsfounder/go/pkg/mod'
+GONOPROXY=''
+GONOSUMDB=''
+GOOS='linux' # this line will help
+GOPATH='/home/bugsfounder/go'
+GOPRIVATE=''
+GOPROXY='https://proxy.golang.org,direct'
+GOROOT='/usr/local/go'
+GOSUMDB='sum.golang.org'
+GOTMPDIR=''
+GOTOOLCHAIN='auto'
+GOTOOLDIR='/usr/local/go/pkg/tool/linux_amd64'
+GOVCS=''
+GOVERSION='go1.22.4'
+GCCGO='gccgo'
+GOAMD64='v1'
+AR='ar'
+CC='gcc'
+CXX='g++'
+CGO_ENABLED='1'
+GOMOD='/dev/null'
+GOWORK=''
+CGO_CFLAGS='-O2 -g'
+CGO_CPPFLAGS=''
+CGO_CXXFLAGS='-O2 -g'
+CGO_FFLAGS='-O2 -g'
+CGO_LDFLAGS='-O2 -g'
+PKG_CONFIG='pkg-config'
+GOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build3988505862=/tmp/go-build -gno-record-gcc-switches'
+```
+
+as you see ```GOOS='linux'`` line in the output we are going to use this to build executables, my os is linux i'm going to create executable for windows, linux or mac also.
+
+run this command to build executable for windows from linux
+``` bash
+$ GOOS="windows" go build
+```
+you can update ```GOOS="windows" go build``` command as you're requirement
+``` bash
+$ GOOS="linux" go build
+```
+``` bash
+$ GOOS="darwin" go build
+```
+or you can simply use ```go build``` to create executable for your os
+```bash
+go build
+```

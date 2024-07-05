@@ -17,6 +17,5 @@ func main() {
 	createDate := time.Date(2020, time.August, 15, 23, 23, 0, 0, time.UTC)
 	fmt.Println(createDate)
 	fmt.Println(createDate.Format("01-02-2006 Monday"))
-	
 
 }
