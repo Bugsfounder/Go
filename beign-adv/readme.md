@@ -263,3 +263,30 @@ or you can simply use ```go build``` to create executable for your os
 ```bash
 go build
 ```
+
+### Pointers
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Welcome to a class on pointers")
+
+	var ptr *int
+	fmt.Println("value of pointer is:", ptr)
+
+	// pointer -> *, reference -> &
+	myNumber := 23
+	// var ptr *int = &myNumber
+	var ptr1 = &myNumber
+	// var ptr *int = myNumber // error
+	fmt.Println("Value of actual pointer is:", ptr1) // 0xc0000a4010
+	fmt.Println("Value of actual pointer is:", *ptr1) // 23
+
+	// updating variable value through pointer
+	*ptr1 = *ptr1 + 3
+	fmt.Println("New Value is:", *ptr1)
+
+}
+```
