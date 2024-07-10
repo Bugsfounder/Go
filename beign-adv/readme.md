@@ -509,3 +509,79 @@ func main() {
 	}
 }
 ```
+
+### Loops
+Basic Kind of loops or traditional for loop
+```go
+days := []string{"Sunday", "Tuesday", "Wednesday", "Friday", "Saturday"}
+
+fmt.Println(days)
+
+// Basic / old
+for d := 0; d < len(days); d++ {
+	fmt.Println(days[d])
+}
+```
+#### Get index in i and iterate
+```go
+for i := range days {
+	// i is index
+	fmt.Println(days[i])
+}
+```
+#### Kind of for-each (for each loop)
+```go
+for index, day := range days {
+	fmt.Printf("index is %v and value is %v\n", index, day)
+}
+```
+#### kind of while loop
+```go
+rougueValue := 1
+for rougueValue < 10 {
+	fmt.Println("Value is : ", rougueValue)
+	// ++rougueValue // error
+	rougueValue++
+}
+```
+#### break statement
+```go
+rougueValue := 1
+for rougueValue < 10 {
+	if rougueValue == 5 {
+		rougueValue++
+		break
+	}
+	fmt.Println("Value is : ", rougueValue)
+	rougueValue++
+}
+```
+#### continue statemetn
+```go
+rougueValue := 1
+for rougueValue < 10 {
+	if rougueValue == 5 {
+		rougueValue++
+		continue
+	}
+	fmt.Println("Value is : ", rougueValue)
+	rougueValue++
+}
+```
+#### goto statement
+defining a label
+```go
+bf:
+	fmt.Println("Jumping at bugsfounder.com")
+```
+Using goto statement to jump to the label
+```go
+rougueValue := 1
+for rougueValue < 10 {
+	if rougueValue == 2 {
+		goto bf // jumping to the level
+	}
+	fmt.Println("Value is : ", rougueValue)
+	rougueValue++
+}
+```
