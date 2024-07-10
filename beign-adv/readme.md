@@ -380,3 +380,32 @@ fmt.Println(courses)
 [reactjs javascript swift python ruby]
 [reactjs javascript python ruby]
 ```
+
+### Maps
+maps are used to store key value pairs in go lang.
+code example:
+```go
+language := make(map[string]string)
+// adding values
+language["JS"] = "Javascript"
+language["RB"] = "Ruby"
+language["PY"] = "Python"
+
+// printing entire map and a specific key / value
+fmt.Println("List of all language: ", language)
+fmt.Println("Js Shorts for: ", language["JS"])
+
+// deleting/removing item from map
+delete(language, "RB")
+fmt.Println("List of all language: ", language)
+
+// loops are interesting in golang
+for key, value := range language {
+	fmt.Printf("For key %v, value is %v\n", key, value)
+}
+
+// comma ok
+for _, value := range language {
+	fmt.Printf("For key v, value is %v\n", value)
+}
+```
