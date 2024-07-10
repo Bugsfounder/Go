@@ -640,5 +640,41 @@ func main() {
 
 }
 ```
-
 Note: Type of parameters and return types are compulsory
+
+### Methods 
+Methods are similar to functions, the difference is methods are those functions which are written into a class but we don't have classes in go so the methods are those functions which are written into the structs.
+```go
+type User struct {
+	Name   string
+	Email  string
+	Status bool
+	Age    int
+	// oneAge int // private 'first letter small'
+}
+```
+```go
+func (u User) GetStatus() {
+	fmt.Println("Is user active: ", u.Status)
+
+}
+```
+```go
+func (u User) NewMail() {
+	u.Email = "test@go.dev"
+	fmt.Println("Email of this user is: ", u.Email)
+}
+```
+
+```go
+func main() {
+
+	bugs := User{"Bugs Founder", "bugsfounder2021@gmail.com", true, 20}
+	fmt.Println(bugs)
+
+	bugs.GetStatus()
+	bugs.NewMail() // test@go.dev
+	fmt.Println(bugs.Email) // "bugsfounder2021@gmail.com"
+}
+```
+Note: for update the original value we use pointers or references.
