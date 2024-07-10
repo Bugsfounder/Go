@@ -409,3 +409,34 @@ for _, value := range language {
 	fmt.Printf("For key v, value is %v\n", value)
 }
 ```
+
+### Intro to Struct
+There is no inheritance in go lang; No super or parent ...
+```go
+
+func main() {
+	fmt.Println("Structs in go lang")
+
+	bugs := User{"Bugs Founder", "bugsfounder2021@gmail.com", true, 20}
+	fmt.Println(bugs)
+	fmt.Printf("Bugs details are: %+v\n", bugs)
+	fmt.Printf("Name is %v and email is %v\n", bugs.Name, bugs.Email)
+	
+}
+
+type User struct {
+	Name   string 
+	Email  string
+	Status bool
+	Age    int
+}
+
+```
+
+```output
+{Bugs Founder bugsfounder2021@gmail.com true 20}
+Bugs details are: {Name:Bugs Founder Email:bugsfounder2021@gmail.com Status:true Age:20}
+Name is Bugs Founder and email is bugsfounder2021@gmail.com
+```
+
+```%+v``` is very useful to print struct with full detail.
