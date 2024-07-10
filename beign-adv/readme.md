@@ -440,3 +440,40 @@ Name is Bugs Founder and email is bugsfounder2021@gmail.com
 ```
 
 ```%+v``` is very useful to print struct with full detail.
+
+# if else 
+To check conditions.
+```go
+loginCount := 23
+var result string
+
+// if-else if-else ladder 
+if loginCount < 10 {
+	result = "Regular user"
+} else if loginCount > 10 {
+	result = "Watch out"
+} else {
+	result = "Exactly 10 login count"
+}
+
+fmt.Println(result)
+
+// if else
+if 9%2 == 0 {
+	fmt.Println("Number is even")
+} else {
+	fmt.Println("Number is odd")
+}
+
+// creating variable and checking it in if
+if num := 3; num < 10 {
+	fmt.Println("Num is less than 10")
+} else {
+	fmt.Println("Num is NOT Less than 10")
+}
+
+// reverse condition statement '!'
+// if err!= nil{
+
+// }
+```
