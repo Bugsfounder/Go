@@ -1,8 +1,8 @@
 # Go
 
-## Hello World Program
-### Program Creation steps
-### Create and Run the program
+### Hello World Program
+#### Program Creation steps
+#### Create and Run the program
 make a directory and a file called main.go inside the directory
 ```bash
 mkdir hello
@@ -214,10 +214,10 @@ GOEXPERIMENT=''
 GOFLAGS=''
 GOHOSTARCH='amd64'
 GOHOSTOS='linux'
-GOINSECURE=''
+GOINSECURE='' 
 GOMODCACHE='/home/bugsfounder/go/pkg/mod'
 GONOPROXY=''
-GONOSUMDB=''
+GONOSUMDB='' 
 GOOS='linux' # this line will help
 GOPATH='/home/bugsfounder/go'
 GOPRIVATE=''
@@ -366,4 +366,17 @@ func main() {
 	fmt.Println(highScores)
 
 }
+```
+
+#### How to remove a value from slices based on index
+```go
+var courses = []string{"reactjs", "javascript", "swift", "python", "ruby"}
+fmt.Println(courses)
+var index int = 2
+courses = append(courses[:index], courses[index+1:]...)
+fmt.Println(courses)
+```
+```output
+[reactjs javascript swift python ruby]
+[reactjs javascript python ruby]
 ```
