@@ -709,3 +709,81 @@ Two
 One
 World
 ```
+
+### Files in GO 
+
+#### ReadFile function to read contents of a file and print the contents of that file into the terminal
+```go
+func readFile(filename string) {
+	databyte, err := ioutil.ReadFile(filename) // deprecated
+	// default data type of ReadFile func is Byte
+
+	checkNilError(err)
+
+	fmt.Println("Text Data inside the file is \n", string(databyte))
+}
+```
+#### This logic is repeating to many times so it is good to wrap it into a function.
+```go
+if err != nil {
+	panic(err)
+}
+```
+Created a function ```checkNilError()```
+#### Function to check err so we don't need to repeat the same logic again and again.
+```go
+func checkNilError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+```
+#### Function to Write into a file
+```go
+func writeFile(filename string, content string) {
+	// Creating a file
+	file, err := os.Create(filename)
+
+	// checking error
+	checkNilError(err)
+
+	// writing to the file
+	length, err := io.WriteString(file, content)
+
+	// checking error
+	checkNilError(err)
+
+	fmt.Println(length)
+
+	// close file at the end of the program 'end of the main function'
+	defer file.Close()
+}
+```
+
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+)
+
+func main() {
+	fmt.Println("Welcome to files in golang")
+fmt.Println("Welcome to files in golang")
+
+	content := "This needs to go in a file - BugsFounder.com" // content
+	filename := "./mybffile.txt"                              // filename
+
+	// writing to file using writeFile function 
+	writeFile(filename, content)
+
+
+
+	// reading the file using readFile function 
+	readFile(filename) // reading file './mybffile.txt'
+
+}
+```
