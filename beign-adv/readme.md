@@ -972,7 +972,7 @@ func PerformPostJsonRequest() {
 	fmt.Println(string(content)).😎
 
 }
-```
+```e
 Call the function ```PerformPostJsonRequest()``` in ```main()``` and enjoy 😎.
 
 #### Perform PostForm Request
@@ -1010,3 +1010,139 @@ func PerformPostFormRequest() {
 }
 ```
 Call the function ```PerformPostFormRequest()``` in ```main()``` and enjoy 😎.
+
+
+### Encode JSON
+Create JSON data in golang
+#### imports
+```go
+import (
+	"encoding/json"
+	"fmt"
+)
+```
+
+Step 1: create a struct as scheme
+```go
+type course struct {
+	Name     string `json:"coursename"` // in json Name shows as coursename 
+	Price    int
+	Platform string   `json:"website"`
+	Password string   `json:"_"`              // ignored, i don't want to reveal password
+	Tags     []string `json:"tags,omitempty"` // if nil then leave it empty
+}
+```
+step 2: function to generate json 
+```go
+func EncodeJson() {
+
+	bfcourses := []course{
+		{"ReactJS Bootcamp", 266, "LearnCodeOnline.in", "asdeoi@3342", []string{"web", "js", "dev"}},
+		{"MERN Bootcamp", 443, "LearnCodeOnline.in", "bets#433", []string{"web", "js", "dev", "mern"}},
+		{"Angular Bootcamp", 456, "LearnCodeOnline.in", "w3erwsd23543", nil},
+	} // `course` is the struct that we have created in step 1
+
+	// package this data as JSON data
+
+	// finalJson, err := json.Marshal(bfcourses)
+	// finalJson, err := json.MarshalIndent(bfcourses, "BF", "\t")
+	finalJson, err := json.MarshalIndent(bfcourses, "", "\t")
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("data: %s\n", finalJson)
+
+}
+```
+#### main 
+```go
+func main() {
+	fmt.Println("Welcome to JSON")
+	EncodeJson()
+}
+```
+some functions and their difference, shown in function ```EncodeJson()```
+1. Marshal()
+```go
+finalJson, err := json.Marshal(bfcourses)
+```
+```output
+data: [{"Name":"ReactJS Bootcamp","Price":266,"Platform":"LearnCodeOnline.in","Password":"asdeoi@3342","Tags":["web","js","dev"]},{"Name":"MERN Bootcamp","Price":443,"Platform":"LearnCodeOnline.in","Password":"bets#433","Tags":["web","js","dev","mern"]},{"Name":"Angular Bootcamp","Price":456,"Platform":"LearnCodeOnline.in","Password":"w3erwsd23543","Tags":null}]
+
+```
+2. MarshalIndent() with prefix
+```go
+finalJson, err := json.MarshalIndent(bfcourses, "BF", "\t")
+```
+```output
+data: [
+BF      {
+BF              "coursename": "ReactJS Bootcamp",
+BF              "Price": 266,
+BF              "website": "LearnCodeOnline.in",
+BF              "_": "asdeoi@3342",
+BF              "tags": [
+BF                      "web",
+BF                      "js",
+BF                      "dev"
+BF              ]
+BF      },
+BF      {
+BF              "coursename": "MERN Bootcamp",
+BF              "Price": 443,
+BF              "website": "LearnCodeOnline.in",
+BF              "_": "bets#433",
+BF              "tags": [
+BF                      "web",
+BF                      "js",
+BF                      "dev",
+BF                      "mern"
+BF              ]
+BF      },
+BF      {
+BF              "coursename": "Angular Bootcamp",
+BF              "Price": 456,
+BF              "website": "LearnCodeOnline.in",
+BF              "_": "w3erwsd23543"
+BF      }
+BF]
+```
+3. MarshalIndent() without prefix
+```go
+finalJson, err := json.MarshalIndent(bfcourses, "", "\t")
+```
+```output
+data: [
+        {
+                "coursename": "ReactJS Bootcamp",
+                "Price": 266,
+                "website": "LearnCodeOnline.in",
+                "_": "asdeoi@3342",
+                "tags": [
+                        "web",
+                        "js",
+                        "dev"
+                ]
+        },
+        {
+                "coursename": "MERN Bootcamp",
+                "Price": 443,
+                "website": "LearnCodeOnline.in",
+                "_": "bets#433",
+                "tags": [
+                        "web",
+                        "js",
+                        "dev",
+                        "mern"
+                ]
+        },
+        {
+                "coursename": "Angular Bootcamp",
+                "Price": 456,
+                "website": "LearnCodeOnline.in",
+                "_": "w3erwsd23543"
+        }
+]
+```
