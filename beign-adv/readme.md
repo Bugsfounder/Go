@@ -787,3 +787,50 @@ fmt.Println("Welcome to files in golang")
 
 }
 ```
+
+### Web Requests in GO
+Creating a function which send a get request to url and returns string content
+```go
+func request(url string) (data string, err error) {
+	res, err := http.Get(url) // Get Request
+
+	// checking status code if it is ok return str data 
+	if res.StatusCode == 200 {
+
+		databyte, err := io.ReadAll(res.Body)
+
+		checkNilError(err)
+
+		return string(databyte), nil
+	}
+
+	// return error
+	return "", err
+}
+```
+
+#### Using request function
+sending request to url using request function which we have created.
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+// dummy apis: https://jsonplaceholder.typicode.com/
+const url = "https://jsonplaceholder.typicode.com/posts/1"
+
+func main() {
+	fmt.Println("Welcome to web request")
+
+	res_content, err := request(url)
+
+	checkNilError(err)
+
+	fmt.Println(res_content)
+
+}
+```
