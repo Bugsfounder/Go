@@ -1028,7 +1028,7 @@ type course struct {
 	Name     string `json:"coursename"` // in json Name shows as coursename 
 	Price    int
 	Platform string   `json:"website"`
-	Password string   `json:"_"`              // ignored, i don't want to reveal password
+	Password string   `json:"-"`             // ignored, i don't want to reveal password
 	Tags     []string `json:"tags,omitempty"` // if nil then leave it empty
 }
 ```
@@ -1146,3 +1146,58 @@ data: [
         }
 ]
 ```
+
+### Decode JSON into struct and map
+struct 
+```go
+type course struct {
+	Name     string `json:"coursename"`
+	Price    int
+	Platform string   `json:"website"`
+	Password string   `json:"-"`              // ignored, i don't want to reveal password
+	Tags     []string `json:"tags,omitempty"` // if nil then leave it empty
+}
+```
+```go
+func DecodeJson() {
+
+	// this is just a dummy string json data we have converted it into byte so it looks like coming for web because web response are in byte.
+	jsonDataFromWeb := []byte(`
+	{
+		"coursename": "MERN Bootcamp",
+		"Price": 443,
+		"website": "LearnCodeOnline.in",
+		"_": "bets#433",
+		"tags": ["web","js","dev","mern"]
+	}
+	`)
+
+	var lcoCourse course
+
+	// checking json is valid or not
+	checkValid := json.Valid(jsonDataFromWeb)
+
+	// if valid unmarshal the data
+	if checkValid {
+		fmt.Println("JSON was valid")
+		json.Unmarshal(jsonDataFromWeb, &lcoCourse)
+		fmt.Printf("%#v\n", lcoCourse)
+	} else {
+		fmt.Println("JSON WAS NOT VALID")
+	}
+
+	// MAP
+	// some cases where you just want to add data to key value (map)
+	var myOnlineData map[string]interface{} // we don't know what is the type of value is so we use interface
+
+	// unmarshaling data into map
+	json.Unmarshal(jsonDataFromWeb, &myOnlineData)
+	fmt.Printf("%#v\n", myOnlineData)
+
+	// key value pairs
+	for key, value := range myOnlineData {
+		fmt.Printf("key is %v and value is %v and Type is %T\n", key, value, value)
+	}
+}
+```
+Call the function ```DecodeJson()``` in ```main()``` and enjoy 😎.
