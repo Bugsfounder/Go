@@ -10,7 +10,9 @@ import (
 func main() {
 	fmt.Println("Welcome to web verb video - BF")
 
-	PerformGetRequest()
+	// PerformGetRequest()
+
+	PerformPostJsonRequest()
 }
 
 func PerformGetRequest() {
@@ -39,3 +41,29 @@ func PerformGetRequest() {
 	// fmt.Println(string(content))
 
 }
+
+func PerformPostJsonRequest() {
+	const myurl = "http://localhost:8000/post"
+
+	// fake json payload
+	requestBody := strings.NewReader(`
+		{
+			"cousename":"Let's go with golang",
+			"price":0,
+			"platform":"youtube.com"
+		}
+	`)
+
+	res, err := http.Post(myurl, "application/json", requestBody)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer res.Body.Close()
+
+	content, _ := io.ReadAll(res.Body)
+	fmt.Println(string(content))
+}
+
+

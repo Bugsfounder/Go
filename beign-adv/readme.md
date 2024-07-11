@@ -941,3 +941,36 @@ byteCount, _ := responseString.Write(content)
 fmt.Println("ByteCount is: ", byteCount)
 fmt.Println(responseString.String())
 ```
+
+#### Perform Post Json Request
+
+```go
+func PerformPostJsonRequest() {
+	const myurl = "http://localhost:8000/post"
+
+	// fake json payload
+	requestBody := strings.NewReader(`
+		{
+			"cousename":"Let's go with golang",
+			"price":0,
+			"platform":"youtube.com"
+		}
+	`)
+
+	// sending post request
+	res, err := http.Post(myurl, "application/json", requestBody)
+
+	if err != nil {
+		panic(err)
+	}
+
+	// closing request
+	defer res.Body.Close()
+
+	// reading the data
+	content, _ := io.ReadAll(res.Body)
+	fmt.Println(string(content)).😎
+
+}
+```
+Call the function ```PerformPostJsonRequest()``` in ```main()``` and enjoy 😎.
