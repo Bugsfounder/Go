@@ -1201,3 +1201,217 @@ func DecodeJson() {
 }
 ```
 Call the function ```DecodeJson()``` in ```main()``` and enjoy 😎.
+
+### MOD in go (mod)
+Let's try to use an external module from github into our workspace:
+- [gorilla/mux](https://github.com/gorilla/mux?tab=readme-ov-file)
+- [installation](https://github.com/gorilla/mux?tab=readme-ov-file#install)
+
+create a folder, then create a file called ```main.go`` in it and open terminal into the folder/directory and follow below steps:
+
+step 1: initialize the module in better way
+```go
+go mod init github.com/bugsfounder/mymodules
+```
+you can see go.mod file in your workspace
+```go.mod```
+```go
+module github.com/bugsfounder/mymodules
+
+go 1.22.4
+```
+step 2: install the gorilla/mux module
+```go
+go get -u github.com/gorilla/mux
+```
+output
+```output
+go: downloading github.com/gorilla/mux v1.8.1
+go: added github.com/gorilla/mux v1.8.1
+```
+Note: you can get ```go get -u github.com/gorilla/mux``` this command on the documentation too.
+
+Now you can see a go.sum file into your working directory.
+
+#### Need to understand
+Now if you see into your go.mod file it looks like this:
+```go
+module github.com/bugsfounder/mymodules
+
+go 1.22.4
+
+require github.com/gorilla/mux v1.8.1 // indirect
+```
+You can see a ```indirect``` thing at the end of the last line, this is the gorilla/mux module which we have installed, it is warning you that this module is indirect to make it direct we have to run a command ```go mod tidy```.
+
+After runnig ```go mod tidy``` now you can see the ```//indirect``` this no more there in the file.
+```go
+module github.com/bugsfounder/mymodules
+
+go 1.22.4
+
+require github.com/gorilla/mux v1.8.1
+``` 
+
+#### Writing some code in gorilla/mux
+imports
+```go
+import (
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+```
+functions
+```go
+func greeter() {
+	fmt.Println("hey there mod users")
+
+}
+
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("<h1>Welcome from bugs founder</h1>"))
+}
+```
+main
+```go
+func main() {
+	fmt.Println("Hello mod in go lang")
+	greeter()
+
+	r := mux.NewRouter()
+	r.HandleFunc("/", serveHome).Methods("GET")
+
+	log.Fatal(http.ListenAndServe(":4000", r))
+}
+```
+run the program this will start a server at port 4000
+```go
+go run main.go
+```
+firefox 
+![server request](image-1.png)
+
+#### Some Useful Commands:
+```go
+go mot init <module_name>
+```
+```go
+go mod tidy
+```
+```go
+go mod verify // verifies all modules are good
+```
+```go
+go build . // build an executable
+```
+
+##### GO LIST 
+List your module
+``` ternimal
+go list
+```
+```output
+github.com/bugsfounder/mymodules
+```
+Lists all the modules available on system
+```go
+go list all 
+```
+output
+```ternimal
+bufio
+bytes
+cmp
+compress/flate
+compress/gzip
+container/list
+context
+crypto
+crypto/aes
+crypto/cipher
+crypto/des
+crypto/dsa
+crypto/ecdh
+crypto/ecdsa
+crypto/ed25519
+crypto/elliptic
+crypto/hmac
+crypto/internal/alias
+crypto/internal/bigmod
+crypto/internal/boring
+crypto/internal/boring/bbig
+crypto/internal/boring/sig
+crypto/internal/edwards25519
+crypto/internal/edwards25519/field
+crypto/internal/nistec
+crypto/internal/nistec/fiat
+crypto/internal/randutil
+crypto/md5
+crypto/rand
+crypto/rc4
+.
+.
+.
+```
+Lists the modules which is used by current module
+```go
+go list -m all 
+```
+output
+```
+github.com/bugsfounder/mymodules
+github.com/gorilla/mux v1.8.1
+```
+
+gives all versions available for the module
+```go
+go list -m -versions github.com/gorilla/mux
+```
+output
+```
+github.com/gorilla/mux v1.2.0 v1.3.0 v1.4.0 v1.5.0 v1.6.0 v1.6.1 v1.6.2 v1.7.0 v1.7.1 v1.7.2 v1.7.3 v1.7.4 v1.8.0 v1.8.1
+```
+##### Some other commands
+```go
+go mod why github.com/gorilla/mux
+```
+output
+```
+# github.com/gorilla/mux
+github.com/bugsfounder/mymodules
+github.com/gorilla/mux
+```
+
+graph command
+```go
+go mod graph
+```
+output
+```
+github.com/bugsfounder/mymodules github.com/gorilla/mux@v1.8.1
+github.com/bugsfounder/mymodules go@1.22.4
+go@1.22.4 toolchain@go1.22.4
+```
+
+##### mod edit
+```
+go mod edit -go 1.16
+```
+```
+go mod edit -module newmodule
+```
+
+##### vendor
+```go
+go mod vendor
+```
+run code using vendor
+```
+go run -mod=vendor main.go 
+```
+
+- [Learn More abour Module](https://go.dev/ref/mod)
+- [Semantic Versioning 2.0.0](https://semver.org/)
