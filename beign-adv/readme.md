@@ -974,3 +974,39 @@ func PerformPostJsonRequest() {
 }
 ```
 Call the function ```PerformPostJsonRequest()``` in ```main()``` and enjoy 😎.
+
+#### Perform PostForm Request
+```go
+func PerformPostFormRequest() {
+	const myurl = "http://localhost:8000/postform"
+
+	// formdata
+	data := url.Values{}
+	data.Add("firstname", "Bugs")
+	data.Add("lastname", "Founder")
+	data.Add("email", "bugsfounder2021@gmail.com")
+
+	// sending request
+	res, err := http.PostForm(myurl, data)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer res.Body.Close() // closing the connection
+
+	// reading response
+	content, _ := io.ReadAll(res.Body)
+
+	// creating string builder to convert response into string (default is byte)
+	var responseString strings.Builder
+
+	// writing content into the builder
+	responseString.Write(content)
+	// byteCount, _ := responseString.Write(content)
+
+	// getting data into string
+	fmt.Println(responseString.String())
+}
+```
+Call the function ```PerformPostFormRequest()``` in ```main()``` and enjoy 😎.
