@@ -1714,3 +1714,50 @@ func getStatusCode(endpoint string) {
 ```
 - Learn more [WaitGroup](https://pkg.go.dev/sync#WaitGroup)
 
+## Mutex 
+Sometimes we don't want or want to change or manipulate a variables in that case we use mutex.
+
+for example:
+let's create a variable in our previous code of goroutine
+global variable
+```go
+var signals = []string{"test"} // variable
+
+var wg sync.WaitGroup // usually variable is pointer
+
+// Mutex
+var mut sync.Mutex // usually variable is pointer
+.
+.
+.
+```
+
+Now let's use this variable in our ```getStatusCode()``` function
+```go
+func getStatusCode(endpoint string) {
+	defer wg.Done()
+
+	res, err := http.Get(endpoint)
+	if err != nil {
+		fmt.Println("OOPS in endpoint")
+	} else {
+		mut.Lock()
+		signals = append(signals, endpoint) // here
+		mut.Unlock()
+
+		fmt.Printf("%d status code for %s\n", res.StatusCode, endpoint)
+	}
+}
+```
+
+output:
+```output
+OOPS in endpoint
+200 status code for https://github.com
+200 status code for https://go.dev
+200 status code for https://fb.com
+200 status code for https://google.com
+[test https://github.com https://go.dev https://fb.com https://google.com]
+```
+
+You can lock and unlock uses of variable. [Learn More](https://pkg.go.dev/sync#Mutex)
