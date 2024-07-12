@@ -1715,7 +1715,7 @@ func getStatusCode(endpoint string) {
 - Learn more [WaitGroup](https://pkg.go.dev/sync#WaitGroup)
 
 ## Mutex 
-Sometimes we don't want or want to change or manipulate a variables in that case we use mutex.
+Sometimes we are reading or writing to a variable or doing some task on a variable and don't want others to disturb than we can lock that variable for a while after work done we can unlock that.
 
 for example:
 let's create a variable in our previous code of goroutine
@@ -1760,4 +1760,207 @@ OOPS in endpoint
 [test https://github.com https://go.dev https://fb.com https://google.com]
 ```
 
-You can lock and unlock uses of variable. [Learn More](https://pkg.go.dev/sync#Mutex)
+You can lock and unlock variable. [Learn More](https://pkg.go.dev/sync#Mutex)
+
+### More on Mutex and Race
+
+If you write a program and used go routiens in this and not used mutex while using variables you can have some warnings for not good things in your codebase.
+
+Take below program as an example and lets go throw it:
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	fmt.Println("Race Condition - bugsfounder.com")
+
+	wg := &sync.WaitGroup{}
+
+	var score = []int{0}
+
+	wg.Add(3)
+	// wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		fmt.Println("One")
+		score = append(score, 1)
+		wg.Done()
+	}(wg)
+
+	// wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		fmt.Println("Two")
+		score = append(score, 2)
+		wg.Done()
+	}(wg)
+
+	// wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		fmt.Println("Three")
+		score = append(score, 3)
+		wg.Done()
+	}(wg)
+
+	wg.Wait()
+
+	fmt.Println(score)
+}
+```
+
+open ternial and run:
+if you run using ```go run main.go``` then you get the result:
+```output
+Race Condition - bugsfounder.com
+Three
+One
+Two
+[0 3 1 2]
+```
+
+If you see we have correct result, you think everything is perfect here but let me take you to another way of running this and show you the reality 😎.
+
+Try running your program using:
+```go 
+go run --race main.go
+```
+```output
+Race Condition - bugsfounder.com
+Three
+Two
+One
+==================
+WARNING: DATA RACE
+Read at 0x00c0000b0000 by goroutine 8:
+  main.main.func2()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:26 +0x87
+  main.main.gowrap2()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:28 +0x41
+
+Previous write at 0x00c0000b0000 by goroutine 9:
+  main.main.func3()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:33 +0x104
+  main.main.gowrap3()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:36 +0x41
+
+Goroutine 8 (running) created at:
+  main.main()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:24 +0x37c
+
+Goroutine 9 (finished) created at:
+  main.main()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:31 +0x490
+==================
+==================
+WARNING: DATA RACE
+Read at 0x00c0000a4038 by goroutine 7:
+  runtime.growslice()
+      /usr/local/go/src/runtime/slice.go:155 +0x0
+  main.main.func1()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:19 +0xbc
+  main.main.gowrap1()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:21 +0x41
+
+Previous write at 0x00c0000a4038 by goroutine 9:
+  main.main.func3()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:33 +0xe4
+  main.main.gowrap3()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:36 +0x41
+
+Goroutine 7 (running) created at:
+  main.main()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:17 +0x268
+
+Goroutine 9 (finished) created at:
+  main.main()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:31 +0x490
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000b0000 by goroutine 8:
+  main.main.func2()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:26 +0x104
+  main.main.gowrap2()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:28 +0x41
+
+Previous read at 0x00c0000b0000 by goroutine 7:
+  main.main.func1()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:19 +0x87
+  main.main.gowrap1()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:21 +0x41
+
+Goroutine 8 (running) created at:
+  main.main()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:24 +0x37c
+
+Goroutine 7 (running) created at:
+  main.main()
+      /home/bugsfounder/workspace/Go/beign-adv/27mutexAndAwaitGroups/main.go:17 +0x268
+==================
+[0 3 2]
+Found 3 data race(s)
+exit status 66
+```
+These are happen when a variable of resource is already using by other task and other tasks are demanding to work also with that resource which is already busy.
+
+Now you can see lot of wrong stuffs here, now have to fix all these things, let's go then and implement mutex in out code:
+##### Updated Code
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	fmt.Println("Race Condition - bugsfounder.com")
+
+	wg := &sync.WaitGroup{}
+	// mut := &sync.Mutex{}
+	mut := &sync.RWMutex{}
+
+	mut.RLock()
+	var score = []int{0}
+	mut.RUnlock()
+
+	wg.Add(3)
+	// wg.Add(1)
+	// go func(wg *sync.WaitGroup, m *sync.Mutex) {
+	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
+		fmt.Println("One")
+		mut.Lock()
+		score = append(score, 1)
+		mut.Unlock()
+		wg.Done()
+	}(wg, mut)
+
+	// wg.Add(1)
+	// go func(wg *sync.WaitGroup, m *sync.Mutex) {
+	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
+		fmt.Println("Two")
+		mut.Lock()
+		score = append(score, 2)
+		mut.Unlock()
+		wg.Done()
+	}(wg, mut)
+
+	// wg.Add(1)
+	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
+		fmt.Println("Three")
+		mut.Lock()
+		score = append(score, 3)
+		mut.Unlock()
+		wg.Done()
+	}(wg, mut)
+
+	wg.Wait()
+
+	fmt.Println(score)
+}
+```
+RWMutex - read write mutex or Mutex - mutex both can be used, but most of the time mutex were used. we have to gain knowlege of all because others can going to use anything.
+
+Note: You can set different wait grups by ```wg.Add(1)``` or you can set number of go routines you are using in you program like ```wg.Add(3)```. There are 3 goroutines in our program.
