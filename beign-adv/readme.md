@@ -1964,3 +1964,5 @@ func main() {
 RWMutex - read write mutex or Mutex - mutex both can be used, but most of the time mutex were used. we have to gain knowlege of all because others can going to use anything.
 
 Note: You can set different wait grups by ```wg.Add(1)``` or you can set number of go routines you are using in you program like ```wg.Add(3)```. There are 3 goroutines in our program.
+
+## Channels and Deadlock
