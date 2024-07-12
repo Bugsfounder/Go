@@ -1415,3 +1415,203 @@ go run -mod=vendor main.go
 
 - [Learn More abour Module](https://go.dev/ref/mod)
 - [Semantic Versioning 2.0.0](https://semver.org/)
+
+### Building API in GO Lang
+Let's make Models first:
+```go
+// Model for course - file
+type Course struct {
+	CourseId    string  `json:"courseid"`
+	CourseName  string  `json:"coursename"`
+	CoursePrice int     `json:"price"`
+	Author      *Author `json:"author"`
+}
+
+type Author struct {
+	Fullname string `json:"fullname"`
+	Website  string `json:"website"`
+}
+```
+We have two models now Course and Author
+
+#### Let's Create a DB (Fake DB for now 😎)
+```go
+// Fake DB
+var courses []Course
+```
+
+#### Let's Create some middleware or helper 
+```go
+// middleware, helper - file
+func (c *Course) IsEmpty() bool {
+	return c.CourseId == "" && c.CourseName == ""
+}
+```
+```- file``` simply means, this logic should be written into a saperate file but for now we are writting all these in one file for better understanding, but it is not recommended.
+
+#### Controllers - file
+##### CRUD Operations
+Creating some route functions 
+
+Serving home
+```go
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("<h1>Welcome to API By BugsFounder</h1>"))
+}
+```
+
+#### READ
+Handeler to GET ALL COURSES ```getAllCourses()```
+```go
+func getAllCourses(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get all courses")
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(courses)
+}
+```
+
+Handeler to GET ONE COURSE ```getOneCourse()```
+```go
+func getOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get One Course")
+	w.Header().Set("Content-Type", "application/json")
+
+	// grab id from reqeust
+	params := mux.Vars(r)
+
+	// loop through courses, find matching id and return the response
+	for _, course := range courses {
+		if course.CourseId == params["id"] {
+			json.NewEncoder(w).Encode(course)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode("No Course found with given id")
+	return
+}
+```
+
+#### CREATE
+Handeler to CREATE ONE COURSE ```createOneCourse()```
+```go
+func createOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Create one course")
+	w.Header().Set("Content-Type", "application/json")
+
+	// what if : body is empty
+	if r.Body == nil {
+		json.NewEncoder(w).Encode("Please send some data")
+	}
+
+	// what about - {}
+	var course Course
+	_ = json.NewDecoder(r.Body).Decode(&course)
+
+	if course.IsEmpty() {
+		json.NewEncoder(w).Encode("No data inside JSON")
+		return
+	}
+	// TODO: Check only if title is duplicate
+	// loop, title matches with course.coursename, JSON
+	for _, cour := range courses {
+		if cour.CourseName == course.CourseName {
+			json.NewEncoder(w).Encode("Same Course is already present in the DB Duplicates are not allowed.")
+			return
+		}
+	}
+
+	// generate unique id, string
+	// append course into courses
+
+	// DEPRECATED `rand.Seed`
+	// rand.Seed(time.Now().UnixNano()) // deprecated
+	// course.CourseId = strconv.Itoa(rand.Intn(100))
+
+	// Create a new random number generator with a custom seed (e.g.,)
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+
+	// Generate a random number
+	course.CourseId = strconv.Itoa(rng.Intn(100))
+	courses = append(courses, course)
+	json.NewEncoder(w).Encode(course)
+	return
+}
+```
+
+#### UPDATE
+Handeler to UPDATE ONE COURSE ```UpdateOneCourse()```
+```go
+func updateOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("update one course")
+	w.Header().Set("Content-Type", "application/json")
+
+	// first - grab id from request
+	params := mux.Vars(r)
+
+	// loop, id, remove, add with my ID
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
+			courses = append(courses[:index], courses[index+1:]...)
+			var course Course
+			_ = json.NewDecoder(r.Body).Decode(&course)
+			course.CourseId = params["id"]
+			courses = append(courses, course)
+			json.NewEncoder(w).Encode(course)
+			return
+		}
+	}
+
+	// TODO: send a response when id is not found
+}
+```
+
+#### DELETE
+Handeler to DELETE ONE COURSE ```deleteOneCourse()```
+```go
+func deleteOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("delete one course")
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+
+	// loop, id, remove (index, index + 1)
+
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
+			courses = append(courses[:index], courses[index+1:]...)
+			json.NewEncoder(w).Encode("Successfully deleted the course")
+			return
+		}
+	}
+	json.NewEncoder(w).Encode("Unable to find and deleted the course")
+}
+```
+
+#### Creating APIs and start and listen to the server 
+main function is here
+```go
+func main() {
+	fmt.Println("API - BugsFOunder.com")
+
+	// new router
+	r := mux.NewRouter()
+
+	// seeding - inserting some data into db
+	courses = append(courses, Course{CourseId: "2", CourseName: "ReactJS", CoursePrice: 433, Author: &Author{Fullname: "Bugs Founder", Website: "bugsfounder.com"}})
+	courses = append(courses, Course{CourseId: "4", CourseName: "MERN Stack", CoursePrice: 534, Author: &Author{Fullname: "Bugs Founder", Website: "bugsfounder.com"}})
+
+	// routing
+	r.HandleFunc("/", serveHome).Methods("GET")
+	r.HandleFunc("/courses", getAllCourses).Methods("GET")
+	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
+	r.HandleFunc("/course", createOneCourse).Methods("POST")
+	r.HandleFunc("/course/{id}", updateOneCourse).Methods("PUT")
+	r.HandleFunc("/course/{id}", deleteOneCourse).Methods("DELETE")
+
+	// listen to a port (4000)
+	log.Fatal(http.ListenAndServe(":4000", r))
+}
+```
+
+for learn more about routings visite here [Gorilla/mux](https://github.com/gorilla/mux?tab=readme-ov-file#install)
