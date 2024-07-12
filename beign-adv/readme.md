@@ -1615,3 +1615,102 @@ func main() {
 ```
 
 for learn more about routings visite here [Gorilla/mux](https://github.com/gorilla/mux?tab=readme-ov-file#install)
+
+## Goroutins
+Do not communicate by sharing memory; instead share memory by communicating.
+![Concurrency vs Parallelism](image-2.png)
+![threads and Goroutines](image-3.png)
+![golang slogan](image-4.png)
+
+code example:
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"sync"
+	"time"
+)
+
+var wg sync.WaitGroup // usually variable is pointer
+
+func main() {
+	// go greeter("Hello")
+	// greeter("World")
+
+	websiteList := []string{
+		"https://google.com",
+		"https://go.dev",
+		"https://fb.com",
+		"https://github.com",
+		"https://bugsfounder.com",
+	}
+
+	for _, web := range websiteList {
+		go getStatusCode(web)
+		wg.Add(1)
+	}
+
+	wg.Wait()
+}
+
+func greeter(s string) {
+	for i := 0; i < 6; i++ {
+		time.Sleep(3 * time.Millisecond) // not good idea but we can see at someplaces
+		fmt.Println(s)
+	}
+}
+
+func getStatusCode(endpoint string) {
+	defer wg.Done()
+
+	res, err := http.Get(endpoint)
+	if err != nil {
+		fmt.Println("OOPS in endpoint")
+	} else {
+
+		fmt.Printf("%d status code for %s\n", res.StatusCode, endpoint)
+	}
+
+}
+```
+
+we just add ```go``` at front of any task and it will become a go routine
+```go
+go getStatusCode(web)
+```
+
+if we run the code without using ```sync.WaitGroup``` our code is not going to execute, we have to use ```sync.waitGroup``` so it wait for out task to be done.
+
+Global variable
+```go
+var wg sync.WaitGroup // usually variable is pointer
+```
+
+As you see in the below code we have created a goroutine and executed ```wg.Add(1)``` function call which simply means task 1. 
+```go
+for _, web := range websiteList {
+	go getStatusCode(web)
+	wg.Add(1)
+}
+```
+our work is still not done yet we have to say we have done the task to end the program.
+```go	
+defer wg.Done()
+```
+In this function
+```go
+func getStatusCode(endpoint string) {
+	defer wg.Done()
+
+	res, err := http.Get(endpoint)
+	if err != nil {
+		fmt.Println("OOPS in endpoint")
+	} else {
+		fmt.Printf("%d status code for %s\n", res.StatusCode, endpoint)
+	}
+}
+```
+- Learn more [WaitGroup](https://pkg.go.dev/sync#WaitGroup)
+
